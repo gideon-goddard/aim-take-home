@@ -3,7 +3,8 @@ from models import Component, Inventory, HardwareRevision
 from operations import (
     create_component, get_component, update_component, delete_component,
     create_inventory, get_inventory, update_inventory, delete_inventory,
-    create_hardware_revision, get_hardware_revision, update_hardware_revision, delete_hardware_revision
+    create_hardware_revision, get_hardware_revision, update_hardware_revision, delete_hardware_revision,
+    update_component_cost, get_component_cost_history
 )
 
 def test_component_crud():
@@ -43,3 +44,18 @@ def test_hardware_revision_crud():
     deleted = delete_hardware_revision(created.id)
     assert deleted is True
     assert get_hardware_revision(created.id) is None
+
+def test_component_cost_history():
+    comp = Component(vendor_name="VendorA", manufacturer_name="ManuA")
+    created = create_component(comp)
+    # Initial cost update
+    update_component_cost(created.id, 100.0)
+    update_component_cost(created.id, 150.0)
+    update_component_cost(created.id, 200.0)
+    history = get_component_cost_history(created.id)
+    assert len(history) == 3
+    assert history[0].value == 100.0
+    assert history[1].value == 150.0
+    assert history[2].value == 200.0
+    # Clean up
+    delete_component(created.id)
