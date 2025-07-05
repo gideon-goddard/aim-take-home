@@ -1,5 +1,4 @@
-Commit 1
----------
+## Commit 1
 1. Naming Consistency and Pydantic Best Practices
 Changed field names to use snake_case (e.g., component_id, vendor_name) for Python convention and consistency.
 Used Optional and provided default values for optional fields.
@@ -19,6 +18,10 @@ Cleaned up the code for readability and maintainability.
 6. No Business Logic Changes Yet
 The CRUD and state update functions are still placeholders, but now ready for further implementation.
 
-Commit 2
----------
+## Commit 2
 We were directly editing the README, moved code to two seperate Python files for models and operations.
+
+
+## Commit 3
+CRUD operations for components, inventory, and hardware revisions are now implemented in operations.py using in-memory stores. Type annotations and async were removed to resolve errors, so all functions are now synchronous and compatible with plain Python.
+
