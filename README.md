@@ -13,7 +13,6 @@ Assignment
 You will be provided with simplified versions of a few of our data models and basic operations. Your assignment consists of the following tasks: 
 
 1\. **Fixing Issues in the Provided Models and Operations:** 
-
 ● Identify and correct any issues present in the given data models. 
 
 ● Implement appropriate validation where necessary. 
@@ -85,118 +84,72 @@ We estimate that this assignment should take no more than 3-5 hours to complete.
 
 We look forward to reviewing your submission\! 
 
-\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\#\# 
 
-Python 
+```Python
+from datetime import datetime 
+from typing import List, Optional, Dict, Any, Union 
+from pydantic import BaseModel, Field 
 
-`from datetime import datetime` 
+# Models
+class Cost(BaseModel): 
+    value: float 
+    date: datetime 
 
-`from typing import List, Optional, Dict, Any, Union` 
+class Component(BaseModel): 
+    id: Optional[str] = None 
+    componentId: Optional[int] = None vendorName: str 
+    manufacturerName: str 
+    estimatedLeadTime: str 
+    actualLeadTime: int = 0 
+    orderLink: str 
+    failureRate: float = 0.0 
+    vendorOwner: str 
+    model: str 
+    preSetupRequired: bool 
+    name: Optional[str] = None 
+    notes: Optional[str] = None 
+    costs: Optional[List[Cost]] = [] 
+    cost: Optional[float] = None 
 
-`from pydantic import BaseModel, Field` 
+class InventoryState(str): 
+    ORDERED = "ordered" 
+    RECEIVED = "received" 
+    SETUP = "setup" 
+    ON_HAND_READY = "on-hand-ready" 
+    ALLOCATED = "allocated" 
+    IN_PRODUCTION = "in-production" 
+    FAILED = "failed" 
 
-`# Models`  
-`class Cost(BaseModel):` 
+class Inventory(BaseModel): 
+    id: Optional[str] = None 
+    componentId: str 
+    state: str 
+    quantity: int = 1 
+    stateHistory: List[Dict[str, Any]] = [] serialNumber: Optional[str] = None kitId: Optional[str] = None 
+    subItems: List[str] = [] 
 
-`value: float` 
+class HardwareRevision(BaseModel): id: Optional[str] = None 
+    name: str 
+    components: List[Dict[str, Any]] = []
 
-`date: datetime` 
+# Operations (incomplete) 
+async def get_next_component_id() -> str: 
+    """Generate next component ID""" 
+    return "COM-123" 
 
-`class Component(BaseModel):` 
+async def create_component(component: Component) -> Component: """Create a new component""" 
+    return component 
 
-`id: Optional[str] = None` 
+async def create_inventory(inventory: Inventory) -> List[Inventory]: """Create inventory items""" 
+    items = [] 
+    for _ in range(inventory.quantity): 
+        items.append(inventory) 
+    return items 
 
-`componentId: Optional[int] = None vendorName: str` 
+async def update_inventory_state(inventory_id: str, state: str) -> Dict[str, str]: 
+    """Update inventory state""" 
+    return {"status": "success"} 
 
-`manufacturerName: str` 
-
-`estimatedLeadTime: str` 
-
-`actualLeadTime: int = 0` 
-
-`orderLink: str` 
-
-`failureRate: float = 0.0` 
-
-`vendorOwner: str` 
-
-`model: str` 
-
-`preSetupRequired: bool` 
-
-`name: Optional[str] = None` 
-
-`notes: Optional[str] = None` 
-
-`costs: Optional[List[Cost]] = []` 
-
-`cost: Optional[float] = None` 
-
-`class InventoryState(str):` 
-
-`ORDERED = "ordered"` 
-
-`RECEIVED = "received"` 
-
-`SETUP = "setup"` 
-
-`ON_HAND_READY = "on-hand-ready"` 
-
-`ALLOCATED = "allocated"` 
-
-`IN_PRODUCTION = "in-production"` 
-
-`FAILED = "failed"` 
-
-`class Inventory(BaseModel):` 
-
-`id: Optional[str] = None` 
-
-`componentId: str` 
-
-`state: str` 
-
-`quantity: int = 1` 
-
-`stateHistory: List[Dict[str, Any]] = [] serialNumber: Optional[str] = None kitId: Optional[str] = None` 
-
-`subItems: List[str] = []` 
-
-`class HardwareRevision(BaseModel): id: Optional[str] = None` 
-
-`name: str` 
-
-`components: List[Dict[str, Any]] = []`  
-`# Operations (incomplete)` 
-
-`async def get_next_component_id() -> str:` 
-
-`"""Generate next component ID"""` 
-
-`return "COM-123"` 
-
-`async def create_component(component: Component) -> Component: """Create a new component"""` 
-
-`return component` 
-
-`async def create_inventory(inventory: Inventory) -> List[Inventory]: """Create inventory items"""` 
-
-`items = []` 
-
-`for _ in range(inventory.quantity):` 
-
-`items.append(inventory)` 
-
-`return items` 
-
-`async def update_inventory_state(inventory_id: str, state: str) -> Dict[str, str]:` 
-
-`"""Update inventory state"""` 
-
-`return {"status": "success"}` 
-
-`async def create_hardware_revision(hw_rev: HardwareRevision) -> HardwareRevision:` 
-
-`"""Create a hardware revision"""` 
-
-`return hw_rev`
+async def create_hardware_revision(hw_rev: HardwareRevision) -> HardwareRevision: 
+    """Create a hardware revision""" 
+    return hw_rev
