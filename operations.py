@@ -1,5 +1,6 @@
 from typing import List, Dict
-from models import Component, Inventory, HardwareRevision
+from models import Component, Inventory, HardwareRevision, Cost
+from datetime import datetime
 
 # In-memory stores for demonstration
 components_store = {}
@@ -34,6 +35,25 @@ def update_component(component_id, updates):
 
 def delete_component(component_id):
     return components_store.pop(component_id, None) is not None
+
+def update_component_cost(component_id, new_cost):
+    comp = components_store.get(component_id)
+    if not comp:
+        return None
+    # Add to cost history
+    if hasattr(comp, 'costs') and comp.costs is not None:
+        comp.costs.append(Cost(value=new_cost, date=datetime.now()))
+    else:
+        comp.costs = [Cost(value=new_cost, date=datetime.now())]
+    comp.cost = new_cost
+    components_store[component_id] = comp
+    return comp
+
+def get_component_cost_history(component_id):
+    comp = components_store.get(component_id)
+    if not comp or not hasattr(comp, 'costs'):
+        return []
+    return comp.costs
 
 # CRUD for Inventory
 def create_inventory(inventory):

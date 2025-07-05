@@ -12,6 +12,10 @@ This project is a prototype hardware inventory management system for AIM, design
   - **Web API:** FastAPI app (`web.py`) with OpenAPI docs at `/docs`.
 - **Testing:** Unit tests for all CRUD operations (`test_operations.py`).
 - **Extensible:** Structure allows for easy addition of features like lead time tracking, failure rate analysis, allocation validation, or cost history.
+- **Component Cost History Tracking:**
+  - Every time a component's cost is updated, the change is recorded in its cost history.
+  - You can view the full cost history for any component via both the CLI and the web API.
+  - Automated tests verify that cost history tracking works as expected.
 
 ## Setup
 1. **Clone the repository** and navigate to the project folder.
@@ -33,6 +37,10 @@ python main.py
 ```
 Follow the on-screen menu to add, view, update, or delete components, inventory, and hardware revisions.
 
+**New options:**
+- Update a component's cost (option 13)
+- View a component's cost history (option 14)
+
 ### Web API (FastAPI)
 Start the FastAPI server:
 ```sh
@@ -40,13 +48,16 @@ python -m uvicorn web:app --reload
 ```
 - Visit [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs) for the interactive Swagger UI.
 - Use the API endpoints to manage all entities.
+- **New endpoints:**
+  - `POST /components/{component_id}/cost` to update a component's cost
+  - `GET /components/{component_id}/cost-history` to view cost history
 
 ## Testing
 Run the test suite with:
 ```sh
 pytest
 ```
-All CRUD operations are covered by unit tests in `test_operations.py`.
+All CRUD operations and extension features (including cost history tracking) are covered by unit tests in `test_operations.py`.
 
 ## Design Decisions & Assumptions
 - **In-memory storage** is used for demonstration; no database is required.

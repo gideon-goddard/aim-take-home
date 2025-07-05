@@ -4,8 +4,11 @@ from models import Component, Inventory, HardwareRevision
 from operations import (
     create_component, get_component, update_component, delete_component,
     create_inventory, get_inventory, update_inventory, delete_inventory,
-    create_hardware_revision, get_hardware_revision, update_hardware_revision, delete_hardware_revision
+    create_hardware_revision, get_hardware_revision, update_hardware_revision, delete_hardware_revision,
+    update_component_cost, get_component_cost_history
 )
+from typing import Any
+from fastapi.responses import JSONResponse
 
 app = FastAPI()
 
@@ -24,7 +27,7 @@ def api_get_component(component_id: str):
         raise HTTPException(status_code=404, detail="Component not found")
     return comp
 
-@app.put("/components/{component_id}", response_model=Component)
+@app.put("/components/{component_id}", response_model=ComponentCOMP-fdd5f167)
 def api_update_component(component_id: str, updates: dict):
     updated = update_component(component_id, updates)
     if not updated:
@@ -87,3 +90,15 @@ def api_delete_hardware_revision(hwrev_id: str):
     if not deleted:
         raise HTTPException(status_code=404, detail="Hardware revision not found")
     return {"status": "deleted"}
+
+@app.post("/components/{component_id}/cost")
+def api_update_component_cost(component_id: str, new_cost: float):
+    updated = update_component_cost(component_id, new_cost)
+    if not updated:
+        raise HTTPException(status_code=404, detail="Component not found")
+    return updated
+
+@app.get("/components/{component_id}/cost-history")
+def api_get_component_cost_history(component_id: str):
+    history = get_component_cost_history(component_id)
+    return JSONResponse(content=[{"value": c.value, "date": c.date.isoformat()} for c in history])

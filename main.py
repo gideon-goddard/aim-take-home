@@ -3,7 +3,8 @@ from models import Component, Inventory, HardwareRevision
 from operations import (
     create_component, get_component, update_component, delete_component,
     create_inventory, get_inventory, update_inventory, delete_inventory,
-    create_hardware_revision, get_hardware_revision, update_hardware_revision, delete_hardware_revision
+    create_hardware_revision, get_hardware_revision, update_hardware_revision, delete_hardware_revision,
+    update_component_cost, get_component_cost_history
 )
 
 def main_menu():
@@ -21,6 +22,8 @@ def main_menu():
         print("10. View Hardware Revision")
         print("11. Update Hardware Revision")
         print("12. Delete Hardware Revision")
+        print("13. Update Component Cost")
+        print("14. View Component Cost History")
         print("0. Exit")
         choice = input("Select an option: ")
         if choice == "1":
@@ -82,6 +85,19 @@ def main_menu():
             hwid = input("Hardware Revision ID: ")
             deleted = delete_hardware_revision(hwid)
             print("Deleted." if deleted else "Not found.")
+        elif choice == "13":
+            cid = input("Component ID: ")
+            new_cost = float(input("New cost: "))
+            updated = update_component_cost(cid, new_cost)
+            print(updated or "Not found.")
+        elif choice == "14":
+            cid = input("Component ID: ")
+            history = get_component_cost_history(cid)
+            if history:
+                for cost in history:
+                    print(f"Value: {cost.value}, Date: {cost.date}")
+            else:
+                print("No cost history or component not found.")
         elif choice == "0":
             print("Goodbye!")
             sys.exit(0)

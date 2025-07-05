@@ -37,3 +37,14 @@ CRUD operations for components, inventory, and hardware revisions are now implem
 - Provided instructions for running both the CLI and web server in the new README.md.
 - Added a comprehensive README.md with setup, usage, testing, design decisions, and extension instructions.
 
+## Commit 6
+- Extended the system with component cost history tracking:
+  - Added backend logic to update a component's cost and record every change in its cost history.
+  - Added functions to retrieve the cost history for any component.
+  - Exposed these features in both the CLI (options 13 and 14) and the FastAPI web interface (`/components/{component_id}/cost` and `/components/{component_id}/cost-history`).
+
+## Commit 7
+- Added automated test for component cost history tracking in `test_operations.py`.
+  - Verifies that multiple cost updates are recorded and retrievable in the correct order.
+  - Ensures the extension feature is robust and covered by tests.
+- All tests pass, confirming the correctness of the new feature and overall system stability.
