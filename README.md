@@ -86,70 +86,95 @@ We look forward to reviewing your submission\!
 
 
 ```Python
-from datetime import datetime 
-from typing import List, Optional, Dict, Any, Union 
-from pydantic import BaseModel, Field 
+from datetime import datetime
+from typing import List, Optional, Dict, Any, Union
+from pydantic import BaseModel, Field, validator
 
 # Models
-class Cost(BaseModel): 
-    value: float 
-    date: datetime 
+class Cost(BaseModel):
+    value: float
+    date: datetime
 
-class Component(BaseModel): 
-    id: Optional[str] = None 
-    componentId: Optional[int] = None vendorName: str 
-    manufacturerName: str 
-    estimatedLeadTime: str 
-    actualLeadTime: int = 0 
-    orderLink: str 
-    failureRate: float = 0.0 
-    vendorOwner: str 
-    model: str 
-    preSetupRequired: bool 
-    name: Optional[str] = None 
-    notes: Optional[str] = None 
-    costs: Optional[List[Cost]] = [] 
-    cost: Optional[float] = None 
+class Component(BaseModel):
+    id: Optional[str] = None
+    component_id: Optional[int] = None
+    vendor_name: str
+    manufacturer_name: str
+    estimated_lead_time: Optional[str] = None
+    actual_lead_time: Optional[int] = 0
+    order_link: Optional[str] = None
+    failure_rate: Optional[float] = 0.0
+    vendor_owner: Optional[str] = None
+    model: Optional[str] = None
+    pre_setup_required: Optional[bool] = False
+    name: Optional[str] = None
+    notes: Optional[str] = None
+    costs: Optional[List[Cost]] = Field(default_factory=list)
+    cost: Optional[float] = None
 
-class InventoryState(str): 
-    ORDERED = "ordered" 
-    RECEIVED = "received" 
-    SETUP = "setup" 
-    ON_HAND_READY = "on-hand-ready" 
-    ALLOCATED = "allocated" 
-    IN_PRODUCTION = "in-production" 
-    FAILED = "failed" 
+    @validator('failure_rate')
+    def failure_rate_non_negative(cls, v):
+        if v is not None and v < 0:
+            raise ValueError('Failure rate must be non-negative')
+        return v
 
-class Inventory(BaseModel): 
-    id: Optional[str] = None 
-    componentId: str 
-    state: str 
-    quantity: int = 1 
-    stateHistory: List[Dict[str, Any]] = [] serialNumber: Optional[str] = None kitId: Optional[str] = None 
-    subItems: List[str] = [] 
+class InventoryState(str):
+    ORDERED = "ordered"
+    RECEIVED = "received"
+    SETUP = "setup"
+    ON_HAND_READY = "on-hand-ready"
+    ALLOCATED = "allocated"
+    IN_PRODUCTION = "in-production"
+    FAILED = "failed"
 
-class HardwareRevision(BaseModel): id: Optional[str] = None 
-    name: str 
-    components: List[Dict[str, Any]] = []
+class Inventory(BaseModel):
+    id: Optional[str] = None
+    component_id: str
+    state: str
+    quantity: int = 1
+    state_history: List[Dict[str, Any]] = Field(default_factory=list)
+    serial_number: Optional[str] = None
+    kit_id: Optional[str] = None
+    sub_items: List[str] = Field(default_factory=list)
 
-# Operations (incomplete) 
-async def get_next_component_id() -> str: 
-    """Generate next component ID""" 
-    return "COM-123" 
+    @validator('quantity')
+    def quantity_positive(cls, v):
+        if v < 1:
+            raise ValueError('Quantity must be at least 1')
+        return v
 
-async def create_component(component: Component) -> Component: """Create a new component""" 
-    return component 
+class HardwareRevision(BaseModel):
+    id: Optional[str] = None
+    name: str
+    components: List[Dict[str, Any]] = Field(default_factory=list)
 
-async def create_inventory(inventory: Inventory) -> List[Inventory]: """Create inventory items""" 
-    items = [] 
-    for _ in range(inventory.quantity): 
-        items.append(inventory) 
-    return items 
+# Operations (incomplete)
+async def get_next_component_id() -> str:
+    """Generate next component ID"""
+    # This should be replaced with a real ID generator
+    return "COM-123"
 
-async def update_inventory_state(inventory_id: str, state: str) -> Dict[str, str]: 
-    """Update inventory state""" 
-    return {"status": "success"} 
+async def create_component(component: Component) -> Component:
+    """Create a new component"""
+    # Add validation or persistence logic here
+    return component
 
-async def create_hardware_revision(hw_rev: HardwareRevision) -> HardwareRevision: 
-    """Create a hardware revision""" 
+async def create_inventory(inventory: Inventory) -> List[Inventory]:
+    """Create inventory items"""
+    items = []
+    for _ in range(inventory.quantity):
+        item = inventory.copy()
+        items.append(item)
+    return items
+
+async def update_inventory_state(inventory_id: str, state: str) -> Dict[str, str]:
+    """Update inventory state"""
+    # Add logic to update state and state history
+    return {"status": "success"}
+
+async def create_hardware_revision(hw_rev: HardwareRevision) -> HardwareRevision:
+    """Create a hardware revision"""
+    # Add validation or persistence logic here
     return hw_rev
+```
+
