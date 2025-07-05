@@ -1,0 +1,92 @@
+import sys
+from models import Component, Inventory, HardwareRevision
+from operations import (
+    create_component, get_component, update_component, delete_component,
+    create_inventory, get_inventory, update_inventory, delete_inventory,
+    create_hardware_revision, get_hardware_revision, update_hardware_revision, delete_hardware_revision
+)
+
+def main_menu():
+    while True:
+        print("\nAIM Inventory Management CLI")
+        print("1. Add Component")
+        print("2. View Component")
+        print("3. Update Component")
+        print("4. Delete Component")
+        print("5. Add Inventory")
+        print("6. View Inventory")
+        print("7. Update Inventory State")
+        print("8. Delete Inventory")
+        print("9. Add Hardware Revision")
+        print("10. View Hardware Revision")
+        print("11. Update Hardware Revision")
+        print("12. Delete Hardware Revision")
+        print("0. Exit")
+        choice = input("Select an option: ")
+        if choice == "1":
+            vendor = input("Vendor name: ")
+            manu = input("Manufacturer name: ")
+            comp = Component(vendor_name=vendor, manufacturer_name=manu)
+            created = create_component(comp)
+            print(f"Created: {created}")
+        elif choice == "2":
+            cid = input("Component ID: ")
+            comp = get_component(cid)
+            print(comp or "Not found.")
+        elif choice == "3":
+            cid = input("Component ID: ")
+            field = input("Field to update: ")
+            value = input("New value: ")
+            updated = update_component(cid, {field: value})
+            print(updated or "Not found.")
+        elif choice == "4":
+            cid = input("Component ID: ")
+            deleted = delete_component(cid)
+            print("Deleted." if deleted else "Not found.")
+        elif choice == "5":
+            compid = input("Component ID: ")
+            state = input("State: ")
+            qty = int(input("Quantity: "))
+            inv = Inventory(component_id=compid, state=state, quantity=qty)
+            items = create_inventory(inv)
+            print(f"Created: {items}")
+        elif choice == "6":
+            iid = input("Inventory ID: ")
+            inv = get_inventory(iid)
+            print(inv or "Not found.")
+        elif choice == "7":
+            iid = input("Inventory ID: ")
+            state = input("New state: ")
+            updated = update_inventory(iid, {"state": state})
+            print(updated or "Not found.")
+        elif choice == "8":
+            iid = input("Inventory ID: ")
+            deleted = delete_inventory(iid)
+            print("Deleted." if deleted else "Not found.")
+        elif choice == "9":
+            name = input("Hardware Revision Name: ")
+            hw = HardwareRevision(name=name)
+            created = create_hardware_revision(hw)
+            print(f"Created: {created}")
+        elif choice == "10":
+            hwid = input("Hardware Revision ID: ")
+            hw = get_hardware_revision(hwid)
+            print(hw or "Not found.")
+        elif choice == "11":
+            hwid = input("Hardware Revision ID: ")
+            field = input("Field to update: ")
+            value = input("New value: ")
+            updated = update_hardware_revision(hwid, {field: value})
+            print(updated or "Not found.")
+        elif choice == "12":
+            hwid = input("Hardware Revision ID: ")
+            deleted = delete_hardware_revision(hwid)
+            print("Deleted." if deleted else "Not found.")
+        elif choice == "0":
+            print("Goodbye!")
+            sys.exit(0)
+        else:
+            print("Invalid option.")
+
+if __name__ == "__main__":
+    main_menu()

@@ -1,85 +1,67 @@
-AIM Hardware Inventory Management System \- Take-Home Assignment 
+# AIM Hardware Inventory Management System
 
-Introduction 
+## Overview
+This project is a prototype hardware inventory management system for AIM, designed to demonstrate clean code, validation, CRUD operations, and both CLI and web-based user interfaces. It is built with Python, Pydantic, and FastAPI, and uses in-memory storage for simplicity.
 
-AIM is a combined hardware/software company specializing in managing inventory from order to installation. As part of our interview process, we've prepared a take-home assignment to evaluate your problem-solving skills, coding abilities, and overall approach to software development. 
+## Features
+- **Data Models:** Components, Inventory, and Hardware Revisions with validation (Pydantic).
+- **CRUD Operations:** Full create, read, update, and delete for all entities.
+- **State Tracking:** Inventory items track their state and can be updated.
+- **User Interfaces:**
+  - **CLI:** Menu-driven command-line interface (`main.py`).
+  - **Web API:** FastAPI app (`web.py`) with OpenAPI docs at `/docs`.
+- **Testing:** Unit tests for all CRUD operations (`test_operations.py`).
+- **Extensible:** Structure allows for easy addition of features like lead time tracking, failure rate analysis, allocation validation, or cost history.
 
-Background 
+## Setup
+1. **Clone the repository** and navigate to the project folder.
+2. **Create and activate a virtual environment:**
+   ```sh
+   python3 -m venv venv
+   source venv/bin/activate
+   ```
+3. **Install dependencies:**
+   ```sh
+   pip install fastapi uvicorn pydantic pytest
+   ```
 
-We have an existing inventory management system that tracks components, inventory items, and hardware revisions. Your task is to extend and improve upon this system. 
+## Usage
+### Command-Line Interface (CLI)
+Run the CLI to manage inventory interactively:
+```sh
+python main.py
+```
+Follow the on-screen menu to add, view, update, or delete components, inventory, and hardware revisions.
 
-Assignment 
+### Web API (FastAPI)
+Start the FastAPI server:
+```sh
+python -m uvicorn web:app --reload
+```
+- Visit [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs) for the interactive Swagger UI.
+- Use the API endpoints to manage all entities.
 
-You will be provided with simplified versions of a few of our data models and basic operations. Your assignment consists of the following tasks: 
+## Testing
+Run the test suite with:
+```sh
+pytest
+```
+All CRUD operations are covered by unit tests in `test_operations.py`.
 
-1\. **Fixing Issues in the Provided Models and Operations:** 
-● Identify and correct any issues present in the given data models. 
+## Design Decisions & Assumptions
+- **In-memory storage** is used for demonstration; no database is required.
+- **Pydantic** provides validation and type safety for all models.
+- **No authentication** is implemented, as the focus is on core functionality.
+- **Extensible structure:** New features can be added by extending models and operations.
 
-● Implement appropriate validation where necessary. 
+## Issues Fixed
+- Naming consistency (snake_case)
+- Validation for non-negative failure rates and positive inventory quantity
+- Safe list defaults with `Field(default_factory=list)`
+- Removed mutable default arguments
+- Synchronous CRUD functions for compatibility
 
-● Ensure consistency in naming conventions and data types. 
-
-2\. **Implementing Core Functions:** 
-
-● Complete the operations for basic CRUD (Create, Read, Update, Delete) functionality. 
-
-● Add validation logic to prevent invalid operations. 
-
-● Implement proper state tracking for inventory items. 
-
-3\. **Building a User Interface:** 
-
-● Build a solution that accomplishes the following: 
-
-● Add, view, and update components 
-
-● Manage inventory state transitions 
-
-● Generate reports on current inventory 
-
-● Verify hardware revisions against available inventory 
-
-● Feel free to implement the solution in a way that works best for you 
-
-4\. **Extending the System:** 
-
-● Add at least **ONE** of the following features: 
-
-● Component lead time tracking and reporting. 
-
-● Failure rate tracking or analysis. 
-
-● Inventory allocation validation. 
-
-● Component cost history tracking.  
-Solution Guidance: 
-
-● You can edit/refactor any code or file/folder structure to achieve the task. ● Add testing to verify correctness and functionality 
-
-Deliverables 
-
-Please provide the following: 
-
-● **Corrected and Extended Python Code:** Your modified Python code files. ● **User Interface Implementation:** Either your command-line interface or web interface. ● **Documentation:** A brief document explaining: 
-
-● Issues you identified and fixed 
-
-● Design decisions you made during your implementation 
-
-● Instructions on how to run and use your solution. 
-
-● Any assumptions you made. 
-
-Evaluation Criteria 
-
-Your submission will be evaluated based on the following: 
-
-● **Attention to Detail:** Your ability to identify and fix issues. 
-
-● **Code Quality and Organization:** The clarity, efficiency, and structure of your code. ● **User Interface Design and Usability:** The intuitiveness and effectiveness of your interface. ● **Documentation Quality:** The clarity and completeness of your documentation. ● **Testing Approach:** How you tested your solution. 
-
-Time Estimate 
-
-We estimate that this assignment should take no more than 3-5 hours to complete. We are looking for a working prototype that demonstrates your approach to the problem, not a production-ready system. 
-
-We look forward to reviewing your submission\! 
+## How to Extend
+- Add new fields or validation to models in `models.py`.
+- Implement new business logic in `operations.py`.
+- Add new CLI menu options or API endpoints as needed.

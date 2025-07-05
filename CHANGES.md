@@ -25,3 +25,15 @@ We were directly editing the README, moved code to two seperate Python files for
 ## Commit 3
 CRUD operations for components, inventory, and hardware revisions are now implemented in operations.py using in-memory stores. Type annotations and async were removed to resolve errors, so all functions are now synchronous and compatible with plain Python.
 
+## Commit 4
+- Implemented pytest-based unit tests for all CRUD operations in test_operations.py, ensuring correct creation, retrieval, update, and deletion of all entities.
+- Verified that all tests pass, confirming the correctness of the CRUD logic.
+
+## Commit 5
+- Added a menu-driven command-line interface (CLI) in `main.py` for managing components, inventory, and hardware revisions interactively.
+- Implemented a FastAPI web interface in `web.py` with full CRUD endpoints for all entities, including OpenAPI/Swagger documentation at `/docs`.
+- Added a root endpoint to the FastAPI app that provides a welcome message and directs users to the API documentation.
+- Both interfaces use the same in-memory backend and models for consistency.
+- Provided instructions for running both the CLI and web server in the new README.md.
+- Added a comprehensive README.md with setup, usage, testing, design decisions, and extension instructions.
+

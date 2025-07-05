@@ -1,5 +1,5 @@
 from typing import List, Dict
-from .models import Component, Inventory, HardwareRevision
+from models import Component, Inventory, HardwareRevision
 
 # In-memory stores for demonstration
 components_store = {}
