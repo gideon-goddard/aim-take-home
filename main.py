@@ -1,4 +1,5 @@
 import sys
+import time
 from models import Component, Inventory, HardwareRevision
 from operations import (
     create_component, get_component, update_component, delete_component,
@@ -104,5 +105,45 @@ def main_menu():
         else:
             print("Invalid option.")
 
+def demo_cli():
+    print("\n--- CLI Automated Demo ---")
+    time.sleep(0.5)
+    # 1. Add a component
+    comp = Component(vendor_name="DemoVendor", manufacturer_name="DemoManu")
+    created = create_component(comp)
+    print(f"Added component: {created}")
+    time.sleep(0.5)
+    # 2. Update component cost
+    updated = update_component_cost(created.id, 123.45)
+    print(f"Updated component cost: {updated.cost}")
+    time.sleep(0.5)
+    # 3. Add inventory
+    inv = Inventory(component_id=created.id, state="ordered", quantity=2)
+    items = create_inventory(inv)
+    print(f"Added inventory: {[item.id for item in items]}")
+    time.sleep(0.5)
+    # 4. Update inventory state
+    for item in items:
+        updated_inv = update_inventory(item.id, {"state": "received"})
+        print(f"Updated inventory {item.id} state to: {updated_inv.state}")
+        time.sleep(0.5)
+    # 5. Add hardware revision
+    hw = HardwareRevision(name="DemoRev")
+    created_hw = create_hardware_revision(hw)
+    print(f"Added hardware revision: {created_hw}")
+    time.sleep(0.5)
+    # 6. Show cost history
+    update_component_cost(created.id, 200.00)
+    history = get_component_cost_history(created.id)
+    print("Component cost history:")
+    for cost in history:
+        print(f"  Value: {cost.value}, Date: {cost.date}")
+        time.sleep(0.3)
+    print("--- End of CLI Automated Demo ---\n")
+
 if __name__ == "__main__":
-    main_menu()
+    import sys
+    if len(sys.argv) > 1 and sys.argv[1] == "--demo":
+        demo_cli()
+    else:
+        main_menu()
