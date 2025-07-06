@@ -48,3 +48,19 @@ CRUD operations for components, inventory, and hardware revisions are now implem
   - Verifies that multiple cost updates are recorded and retrievable in the correct order.
   - Ensures the extension feature is robust and covered by tests.
 - All tests pass, confirming the correctness of the new feature and overall system stability.
+
+## Commit 8
+Simply added timing to CLI demo to make it slightly more animated.
+
+## Commit 9
+- Added comprehensive Pydantic validation to all models:
+  - Enforced non-empty strings for names, IDs, and URLs using @field_validator and mode='before' for Pydantic v2 compatibility.
+  - Non-negative checks for costs, lead times, and failure rates.
+  - URL validation for order links.
+  - State validation for inventory.
+  - Quantity must be positive.
+  - Optional string fields (like serial_number) must not be empty if provided.
+- Updated all validators to use @field_validator and the new info parameter as required by Pydantic v2.
+- Added and verified tests for all validation logic; all tests pass, confirming robust error handling for invalid input.
+- Models are now robust against invalid data and provide clear error messages for invalid input.
+

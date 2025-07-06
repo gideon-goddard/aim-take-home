@@ -1,6 +1,6 @@
 from datetime import datetime
 from typing import List, Optional, Dict, Any
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator
 
 # Models
 def get_models():
@@ -25,10 +25,34 @@ def get_models():
         costs: Optional[List[Cost]] = Field(default_factory=list)
         cost: Optional[float] = None
 
-        @validator('failure_rate')
+        @field_validator('vendor_name', 'manufacturer_name', 'model', 'name', mode='before')
+        def not_empty_string(cls, v, info):
+            if v is not None and isinstance(v, str) and not v.strip():
+                raise ValueError(f'{info.field_name} cannot be empty')
+            return v
+
+        @field_validator('actual_lead_time')
+        def lead_time_non_negative(cls, v):
+            if v is not None and v < 0:
+                raise ValueError('actual_lead_time must be non-negative')
+            return v
+
+        @field_validator('failure_rate')
         def failure_rate_non_negative(cls, v):
             if v is not None and v < 0:
                 raise ValueError('Failure rate must be non-negative')
+            return v
+
+        @field_validator('order_link')
+        def valid_url(cls, v):
+            if v is not None and v.strip() and not (v.startswith('http://') or v.startswith('https://')):
+                raise ValueError('order_link must be a valid URL')
+            return v
+
+        @field_validator('cost')
+        def cost_non_negative(cls, v):
+            if v is not None and v < 0:
+                raise ValueError('cost must be non-negative')
             return v
 
     class InventoryState(str):
@@ -50,16 +74,44 @@ def get_models():
         kit_id: Optional[str] = None
         sub_items: List[str] = Field(default_factory=list)
 
-        @validator('quantity')
+        @field_validator('component_id')
+        def component_id_not_empty(cls, v):
+            if not v or not v.strip():
+                raise ValueError('component_id cannot be empty')
+            return v
+
+        @field_validator('quantity')
         def quantity_positive(cls, v):
             if v < 1:
                 raise ValueError('Quantity must be at least 1')
+            return v
+
+        @field_validator('state')
+        def valid_state(cls, v):
+            valid_states = [
+                "ordered", "received", "setup", "on-hand-ready",
+                "allocated", "in-production", "failed"
+            ]
+            if v not in valid_states:
+                raise ValueError(f'state must be one of {valid_states}')
+            return v
+
+        @field_validator('serial_number', 'kit_id', mode='before')
+        def not_empty_optional_str(cls, v, info):
+            if v is not None and not v.strip():
+                raise ValueError(f'{info.field_name} cannot be empty if provided')
             return v
 
     class HardwareRevision(BaseModel):
         id: Optional[str] = None
         name: str
         components: List[Dict[str, Any]] = Field(default_factory=list)
+
+        @field_validator('name', mode='before')
+        def name_not_empty(cls, v, info):
+            if not v or not v.strip():
+                raise ValueError('name cannot be empty')
+            return v
 
     return Cost, Component, InventoryState, Inventory, HardwareRevision
 
