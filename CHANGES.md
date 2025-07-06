@@ -64,3 +64,13 @@ Simply added timing to CLI demo to make it slightly more animated.
 - Added and verified tests for all validation logic; all tests pass, confirming robust error handling for invalid input.
 - Models are now robust against invalid data and provide clear error messages for invalid input.
 
+## Commit 10
+- Cleaned up .gitignore to ensure all Python cache files, virtual environments, and test cache directories are ignored:
+  - Added __pycache__/, *.pyc, venv/, .venv/, and .pytest_cache/ to .gitignore.
+  - Confirmed that no cache or environment files are tracked by git.
+- The repository now only tracks source code and documentation files relevant to the project.
+
+## Commit 11
+- Fixed a typo in the FastAPI update component endpoint's response_model argument (was 'ComponentCOMP-fdd5f167', now correctly 'Component').
+- This resolves a runtime error in the web API and ensures the update endpoint works as intended.
+

@@ -27,7 +27,7 @@ def api_get_component(component_id: str):
         raise HTTPException(status_code=404, detail="Component not found")
     return comp
 
-@app.put("/components/{component_id}", response_model=ComponentCOMP-fdd5f167)
+@app.put("/components/{component_id}", response_model=Component)
 def api_update_component(component_id: str, updates: dict):
     updated = update_component(component_id, updates)
     if not updated:
