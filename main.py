@@ -214,7 +214,10 @@ def demo_cli():
     else:
         print("Missing or insufficient components:")
         for miss in result:
-            print(miss)
+            # Lookup component name for clarity
+            comp_obj = get_component(miss["component_id"])
+            comp_name = comp_obj.name if comp_obj and hasattr(comp_obj, "name") else miss["component_id"]
+            print(f"Component: {comp_name} (ID: {miss['component_id']}), Required: {miss['required']}, Available: {miss['available']}")
     time.sleep(0.5)
     # 7. Lead time report
     print("\nLead time report:")
