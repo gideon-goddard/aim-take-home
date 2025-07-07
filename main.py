@@ -5,7 +5,8 @@ from operations import (
     create_component, get_component, update_component, delete_component,
     create_inventory, get_inventory, update_inventory, delete_inventory,
     create_hardware_revision, get_hardware_revision, update_hardware_revision, delete_hardware_revision,
-    update_component_cost, get_component_cost_history
+    update_component_cost, get_component_cost_history,
+    list_inventory, verify_hardware_revision_inventory
 )
 
 def main_menu():
@@ -25,6 +26,8 @@ def main_menu():
         print("12. Delete Hardware Revision")
         print("13. Update Component Cost")
         print("14. View Component Cost History")
+        print("15. List All Inventory")
+        print("16. Verify Hardware Revision Against Inventory")
         print("0. Exit")
         choice = input("Select an option: ")
         if choice == "1":
@@ -99,6 +102,26 @@ def main_menu():
                     print(f"Value: {cost.value}, Date: {cost.date}")
             else:
                 print("No cost history or component not found.")
+        elif choice == "15":
+            state = input("Filter by state (or leave blank): ")
+            component_id = input("Filter by component_id (or leave blank): ")
+            items = list_inventory(state=state or None, component_id=component_id or None)
+            if items:
+                for item in items:
+                    print(item)
+            else:
+                print("No inventory found.")
+        elif choice == "16":
+            hwid = input("Hardware Revision ID: ")
+            result = verify_hardware_revision_inventory(hwid)
+            if result is None:
+                print("Hardware revision not found.")
+            elif not result:
+                print("All required components are available in inventory.")
+            else:
+                print("Missing or insufficient components:")
+                for miss in result:
+                    print(miss)
         elif choice == "0":
             print("Goodbye!")
             sys.exit(0)
@@ -128,7 +151,7 @@ def demo_cli():
         print(f"Updated inventory {item.id} state to: {updated_inv.state}")
         time.sleep(0.5)
     # 5. Add hardware revision
-    hw = HardwareRevision(name="DemoRev")
+    hw = HardwareRevision(name="DemoRev", components=[{"component_id": created.id, "quantity": 1}])
     created_hw = create_hardware_revision(hw)
     print(f"Added hardware revision: {created_hw}")
     time.sleep(0.5)
@@ -139,6 +162,21 @@ def demo_cli():
     for cost in history:
         print(f"  Value: {cost.value}, Date: {cost.date}")
         time.sleep(0.3)
+    # 7. List all inventory
+    print("\nInventory report:")
+    all_items = list_inventory()
+    for item in all_items:
+        print(item)
+        time.sleep(0.2)
+    # 8. Verify hardware revision against inventory
+    print("\nVerifying hardware revision against inventory:")
+    result = verify_hardware_revision_inventory(created_hw.id)
+    if not result:
+        print("All required components are available in inventory.")
+    else:
+        print("Missing or insufficient components:")
+        for miss in result:
+            print(miss)
     print("--- End of CLI Automated Demo ---\n")
 
 if __name__ == "__main__":

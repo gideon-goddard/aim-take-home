@@ -74,3 +74,12 @@ Simply added timing to CLI demo to make it slightly more animated.
 - Fixed a typo in the FastAPI update component endpoint's response_model argument (was 'ComponentCOMP-fdd5f167', now correctly 'Component').
 - This resolves a runtime error in the web API and ensures the update endpoint works as intended.
 
+## Commit 12
+- Added inventory reporting and hardware revision verification features:
+  - Implemented backend functions to list all inventory (with optional filters) and to verify if a hardware revision's required components are available in inventory.
+  - Added CLI options 15 (list inventory) and 16 (verify hardware revision).
+  - Added FastAPI endpoints `/inventory/` (GET) and `/hardware-revisions/{hwrev_id}/verify-inventory` (GET).
+  - Added tests for both features in `test_operations.py`.
+  - Extended the CLI demo to showcase both features.
+- All assignment requirements for inventory state transitions, reporting, and hardware revision verification are now fully met.
+

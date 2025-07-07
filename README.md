@@ -16,6 +16,10 @@ This project is a prototype hardware inventory management system for AIM, design
   - Every time a component's cost is updated, the change is recorded in its cost history.
   - You can view the full cost history for any component via both the CLI and the web API.
   - Automated tests verify that cost history tracking works as expected.
+- **Inventory Reporting:**
+  - CLI option 15 and the `/inventory/` API endpoint list all inventory items, with optional filters by state or component.
+- **Hardware Revision Verification:**
+  - CLI option 16 and the `/hardware-revisions/{hwrev_id}/verify-inventory` API endpoint check if all required components for a hardware revision are available in inventory.
 
 ## Setup
 1. **Clone the repository** and navigate to the project folder.
@@ -40,6 +44,8 @@ Follow the on-screen menu to add, view, update, or delete components, inventory,
 **New options:**
 - Update a component's cost (option 13)
 - View a component's cost history (option 14)
+- Generate inventory reports (option 15)
+- Verify hardware revision inventory (option 16)
 
 ### Web API (FastAPI)
 Start the FastAPI server:
@@ -51,6 +57,8 @@ python -m uvicorn web:app --reload
 - **New endpoints:**
   - `POST /components/{component_id}/cost` to update a component's cost
   - `GET /components/{component_id}/cost-history` to view cost history
+  - `GET /inventory/` to list all inventory items with optional filters
+  - `GET /hardware-revisions/{hwrev_id}/verify-inventory` to check component availability for a hardware revision
 
 ## Testing
 Run the test suite with:

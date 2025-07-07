@@ -5,7 +5,7 @@ from operations import (
     create_component, get_component, update_component, delete_component,
     create_inventory, get_inventory, update_inventory, delete_inventory,
     create_hardware_revision, get_hardware_revision, update_hardware_revision, delete_hardware_revision,
-    update_component_cost, get_component_cost_history
+    update_component_cost, get_component_cost_history, list_inventory, verify_hardware_revision_inventory
 )
 from typing import Any
 from fastapi.responses import JSONResponse
@@ -102,3 +102,15 @@ def api_update_component_cost(component_id: str, new_cost: float):
 def api_get_component_cost_history(component_id: str):
     history = get_component_cost_history(component_id)
     return JSONResponse(content=[{"value": c.value, "date": c.date.isoformat()} for c in history])
+
+@app.get("/inventory/")
+def api_list_inventory(state: str = None, component_id: str = None):
+    items = list_inventory(state=state, component_id=component_id)
+    return items
+
+@app.get("/hardware-revisions/{hwrev_id}/verify-inventory")
+def api_verify_hardware_revision_inventory(hwrev_id: str):
+    result = verify_hardware_revision_inventory(hwrev_id)
+    if result is None:
+        raise HTTPException(status_code=404, detail="Hardware revision not found")
+    return {"missing": result, "ok": not result}

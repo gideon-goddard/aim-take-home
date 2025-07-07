@@ -4,7 +4,8 @@ from operations import (
     create_component, get_component, update_component, delete_component,
     create_inventory, get_inventory, update_inventory, delete_inventory,
     create_hardware_revision, get_hardware_revision, update_hardware_revision, delete_hardware_revision,
-    update_component_cost, get_component_cost_history
+    update_component_cost, get_component_cost_history,
+    list_inventory, verify_hardware_revision_inventory
 )
 
 def test_component_crud():
@@ -103,3 +104,38 @@ def test_hardware_revision_validation():
     # Empty name
     with pytest.raises(ValidationError):
         HardwareRevision(name="")
+
+def test_list_inventory():
+    comp = Component(vendor_name="VendorA", manufacturer_name="ManuA")
+    created = create_component(comp)
+    inv1 = Inventory(component_id=created.id, state="ordered", quantity=1)
+    inv2 = Inventory(component_id=created.id, state="received", quantity=2)
+    create_inventory(inv1)
+    create_inventory(inv2)
+    all_items = list_inventory()
+    assert any(item.state == "ordered" for item in all_items)
+    filtered = list_inventory(state="received")
+    assert all(item.state == "received" for item in filtered)
+    filtered_by_comp = list_inventory(component_id=created.id)
+    assert all(item.component_id == created.id for item in filtered_by_comp)
+    # Clean up
+    delete_component(created.id)
+
+def test_verify_hardware_revision_inventory():
+    comp = Component(vendor_name="VendorA", manufacturer_name="ManuA")
+    created = create_component(comp)
+    inv = Inventory(component_id=created.id, state="on-hand-ready", quantity=2)
+    create_inventory(inv)
+    hw = HardwareRevision(name="RevA", components=[{"component_id": created.id, "quantity": 1}])
+    created_hw = create_hardware_revision(hw)
+    result = verify_hardware_revision_inventory(created_hw.id)
+    assert result == []  # All required components available
+    # Now test missing
+    hw2 = HardwareRevision(name="RevB", components=[{"component_id": created.id, "quantity": 10}])
+    created_hw2 = create_hardware_revision(hw2)
+    result2 = verify_hardware_revision_inventory(created_hw2.id)
+    assert result2 and result2[0]["required"] == 10
+    # Clean up
+    delete_component(created.id)
+    delete_hardware_revision(created_hw.id)
+    delete_hardware_revision(created_hw2.id)

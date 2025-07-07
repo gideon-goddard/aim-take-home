@@ -81,6 +81,14 @@ def update_inventory(inventory_id, updates):
 def delete_inventory(inventory_id):
     return inventory_store.pop(inventory_id, None) is not None
 
+def list_inventory(state: str = None, component_id: str = None):
+    items = list(inventory_store.values())
+    if state:
+        items = [item for item in items if item.state == state]
+    if component_id:
+        items = [item for item in items if item.component_id == component_id]
+    return items
+
 # CRUD for HardwareRevision
 def create_hardware_revision(hw_rev):
     if not hw_rev.id:
@@ -103,3 +111,17 @@ def update_hardware_revision(hwrev_id, updates):
 
 def delete_hardware_revision(hwrev_id):
     return hardware_revision_store.pop(hwrev_id, None) is not None
+
+def verify_hardware_revision_inventory(hwrev_id: str):
+    hw = hardware_revision_store.get(hwrev_id)
+    if not hw:
+        return None
+    # Each component in hw.components is a dict with at least 'component_id' and 'quantity' (if present)
+    missing = []
+    for comp in hw.components:
+        cid = comp.get('component_id')
+        required_qty = comp.get('quantity', 1)
+        available_qty = sum(item.quantity for item in inventory_store.values() if item.component_id == cid and item.state in ["on-hand-ready", "allocated", "in-production"])
+        if available_qty < required_qty:
+            missing.append({"component_id": cid, "required": required_qty, "available": available_qty})
+    return missing
