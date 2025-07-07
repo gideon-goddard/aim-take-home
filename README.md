@@ -20,6 +20,15 @@ This project is a prototype hardware inventory management system for AIM, design
   - CLI option 15 and the `/inventory/` API endpoint list all inventory items, with optional filters by state or component.
 - **Hardware Revision Verification:**
   - CLI option 16 and the `/hardware-revisions/{hwrev_id}/verify-inventory` API endpoint check if all required components for a hardware revision are available in inventory.
+- **Lead Time Tracking:**
+  - Track and update lead times for components.
+  - View lead time reports via CLI and API.
+- **Failure Rate Analysis:**
+  - Record and analyze failure rates for components.
+  - Generate failure rate reports via CLI and API.
+- **Allocation Validation:**
+  - Validate if inventory allocations meet hardware revision requirements.
+  - Check allocation status via CLI and API.
 
 ## Setup
 1. **Clone the repository** and navigate to the project folder.
@@ -46,6 +55,11 @@ Follow the on-screen menu to add, view, update, or delete components, inventory,
 - View a component's cost history (option 14)
 - Generate inventory reports (option 15)
 - Verify hardware revision inventory (option 16)
+- Track and update component lead times (option 17)
+- View lead time reports (option 18)
+- Record and analyze component failure rates (option 19)
+- Generate failure rate reports (option 20)
+- Validate inventory allocation for hardware revisions (option 21)
 
 ### Web API (FastAPI)
 Start the FastAPI server:
@@ -57,15 +71,20 @@ python -m uvicorn web:app --reload
 - **New endpoints:**
   - `POST /components/{component_id}/cost` to update a component's cost
   - `GET /components/{component_id}/cost-history` to view cost history
+  - `POST /components/{component_id}/lead-time` to update lead time
+  - `GET /components/{component_id}/lead-time` to view lead time
+  - `POST /components/{component_id}/failure-rate` to record failure rate
+  - `GET /components/{component_id}/failure-rate` to view failure rate analysis
   - `GET /inventory/` to list all inventory items with optional filters
   - `GET /hardware-revisions/{hwrev_id}/verify-inventory` to check component availability for a hardware revision
+  - `GET /hardware-revisions/{hwrev_id}/validate-allocation` to validate allocation for a hardware revision
 
 ## Testing
 Run the test suite with:
 ```sh
 pytest
 ```
-All CRUD operations and extension features (including cost history tracking) are covered by unit tests in `test_operations.py`.
+All CRUD operations and extension features (including cost history tracking, lead time, failure rate, and allocation validation) are covered by unit tests in `test_operations.py`.
 
 ## Design Decisions & Assumptions
 - **In-memory storage** is used for demonstration; no database is required.
@@ -84,3 +103,28 @@ All CRUD operations and extension features (including cost history tracking) are
 - Add new fields or validation to models in `models.py`.
 - Implement new business logic in `operations.py`.
 - Add new CLI menu options or API endpoints as needed.
+
+## Demo
+The CLI demo mode showcases all major features with realistic data, including:
+- Creating several components (e.g., CPU, RAM, SSD, Power Supply) with initial costs, lead times, and failure rates.
+- Adding inventory items for each component, with varying quantities and states (e.g., available, allocated, defective).
+- Creating hardware revisions that require specific quantities of each component.
+- Updating component costs and tracking cost history.
+- Generating inventory and cost history reports.
+- Verifying if hardware revision requirements are met by current inventory.
+- Tracking and reporting component lead times (e.g., CPUs with 7-day lead time, SSDs with 3-day lead time).
+- Recording and analyzing component failure rates (e.g., RAM with 0.5% failure rate, Power Supply with 1% failure rate).
+- Validating inventory allocation for hardware revisions (e.g., checking if enough CPUs and RAM are available for a new server build).
+
+**Demo steps:**
+1. Add components: CPU, RAM, SSD, Power Supply (with costs, lead times, failure rates).
+2. Add inventory: 10 CPUs (available), 20 RAM (available), 5 SSDs (allocated), 2 Power Supplies (defective).
+3. Create hardware revision: 'Server v1' (requires 2 CPUs, 4 RAM, 1 SSD, 1 Power Supply).
+4. Update CPU cost twice to demonstrate cost history.
+5. Generate and display inventory and cost history reports.
+6. Verify if 'Server v1' can be built from current inventory.
+7. Update and report lead times for all components.
+8. Record and analyze failure rates for all components.
+9. Validate allocation for 'Server v1' (should fail if not enough available inventory).
+
+Run `python main.py` and select the demo option to see animated output demonstrating these realistic scenarios and all system capabilities.

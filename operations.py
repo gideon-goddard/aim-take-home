@@ -125,3 +125,35 @@ def verify_hardware_revision_inventory(hwrev_id: str):
         if available_qty < required_qty:
             missing.append({"component_id": cid, "required": required_qty, "available": available_qty})
     return missing
+
+def get_lead_time_report():
+    # Returns a list of (component_id, estimated_lead_time, actual_lead_time)
+    return [
+        {
+            "component_id": comp.id,
+            "estimated_lead_time": comp.estimated_lead_time,
+            "actual_lead_time": comp.actual_lead_time
+        }
+        for comp in components_store.values()
+    ]
+
+def get_failure_rate_report(threshold: float = 0.05):
+    # Returns components with failure_rate >= threshold
+    return [
+        {
+            "component_id": comp.id,
+            "failure_rate": comp.failure_rate
+        }
+        for comp in components_store.values() if comp.failure_rate is not None and comp.failure_rate >= threshold
+    ]
+
+def validate_inventory_allocation(component_id: str, requested_qty: int):
+    # Returns True if enough on-hand/ready/allocated/in-production inventory exists
+    available_qty = sum(item.quantity for item in inventory_store.values() if item.component_id == component_id and item.state in ["on-hand-ready", "allocated", "in-production"])
+    return available_qty >= requested_qty, available_qty
+
+def get_cost_history_report(component_id: str):
+    comp = components_store.get(component_id)
+    if not comp or not hasattr(comp, 'costs'):
+        return []
+    return [{"value": c.value, "date": c.date} for c in comp.costs]

@@ -83,3 +83,11 @@ Simply added timing to CLI demo to make it slightly more animated.
   - Extended the CLI demo to showcase both features.
 - All assignment requirements for inventory state transitions, reporting, and hardware revision verification are now fully met.
 
+## Commit 13
+- Added lead time tracking, failure rate analysis, allocation validation, and cost history reporting features:
+  - Implemented backend functions for each feature in `operations.py`.
+  - Added CLI options 17 (lead time), 18 (failure rate), 19 (allocation validation), and 20 (cost history report).
+  - Added FastAPI endpoints `/lead-time-report`, `/failure-rate-report`, `/allocation-validation/{component_id}`, and `/cost-history-report/{component_id}`.
+  - Extended the CLI demo to showcase all new features.
+  - Updated documentation to describe and demonstrate these capabilities.
+

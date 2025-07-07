@@ -5,7 +5,8 @@ from operations import (
     create_inventory, get_inventory, update_inventory, delete_inventory,
     create_hardware_revision, get_hardware_revision, update_hardware_revision, delete_hardware_revision,
     update_component_cost, get_component_cost_history,
-    list_inventory, verify_hardware_revision_inventory
+    list_inventory, verify_hardware_revision_inventory,
+    get_lead_time_report, get_failure_rate_report, validate_inventory_allocation, get_cost_history_report
 )
 
 def test_component_crud():
@@ -139,3 +140,27 @@ def test_verify_hardware_revision_inventory():
     delete_component(created.id)
     delete_hardware_revision(created_hw.id)
     delete_hardware_revision(created_hw2.id)
+
+def test_lead_time_and_failure_rate_and_allocation_and_cost_history():
+    comp = Component(vendor_name="VendorA", manufacturer_name="ManuA", estimated_lead_time="5d", actual_lead_time=7, failure_rate=0.1)
+    created = create_component(comp)
+    update_component_cost(created.id, 100)
+    update_component_cost(created.id, 200)
+    inv = Inventory(component_id=created.id, state="on-hand-ready", quantity=3)
+    create_inventory(inv)
+    # Lead time report
+    lead_report = get_lead_time_report()
+    assert any(e["component_id"] == created.id for e in lead_report)
+    # Failure rate report
+    fail_report = get_failure_rate_report(0.05)
+    assert any(e["component_id"] == created.id for e in fail_report)
+    # Allocation validation
+    valid, available = validate_inventory_allocation(created.id, 2)
+    assert valid and available >= 2
+    valid, available = validate_inventory_allocation(created.id, 10)
+    assert not valid
+    # Cost history report
+    cost_hist = get_cost_history_report(created.id)
+    assert len(cost_hist) == 2
+    # Clean up
+    delete_component(created.id)

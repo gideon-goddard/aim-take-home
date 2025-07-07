@@ -5,7 +5,8 @@ from operations import (
     create_component, get_component, update_component, delete_component,
     create_inventory, get_inventory, update_inventory, delete_inventory,
     create_hardware_revision, get_hardware_revision, update_hardware_revision, delete_hardware_revision,
-    update_component_cost, get_component_cost_history, list_inventory, verify_hardware_revision_inventory
+    update_component_cost, get_component_cost_history, list_inventory, verify_hardware_revision_inventory,
+    get_lead_time_report, get_failure_rate_report, validate_inventory_allocation, get_cost_history_report
 )
 from typing import Any
 from fastapi.responses import JSONResponse
@@ -114,3 +115,20 @@ def api_verify_hardware_revision_inventory(hwrev_id: str):
     if result is None:
         raise HTTPException(status_code=404, detail="Hardware revision not found")
     return {"missing": result, "ok": not result}
+
+@app.get("/lead-time-report")
+def api_lead_time_report():
+    return get_lead_time_report()
+
+@app.get("/failure-rate-report")
+def api_failure_rate_report(threshold: float = 0.05):
+    return get_failure_rate_report(threshold)
+
+@app.get("/allocation-validation/{component_id}")
+def api_validate_inventory_allocation(component_id: str, requested_qty: int):
+    valid, available = validate_inventory_allocation(component_id, requested_qty)
+    return {"valid": valid, "available": available}
+
+@app.get("/cost-history-report/{component_id}")
+def api_cost_history_report(component_id: str):
+    return get_cost_history_report(component_id)
