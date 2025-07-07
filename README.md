@@ -82,7 +82,7 @@ python -m uvicorn web:app --reload
 ## Testing
 Run the test suite with:
 ```sh
-pytest
+pytest --maxfail=1 --disable-warnings -v 
 ```
 All CRUD operations and extension features (including cost history tracking, lead time, failure rate, and allocation validation) are covered by unit tests in `test_operations.py`.
 
